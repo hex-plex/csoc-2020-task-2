@@ -4,7 +4,7 @@ from store.models import *
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
+from django.db.models import Q
 # Create your views here.
 
 def index(request):
@@ -17,8 +17,9 @@ def bookDetailView(request, bid):
         'num_available': None, # set this to the number of copies of the book available, or 0 if the book isn't available
     }
     # START YOUR CODE HERE
-    
-    
+
+    context['book']=get_object_or_404(Book,pk=bid)
+    context['num_available']=len(BookCopy.objects.filter(book=context['book'],status=True))
     return render(request, template_name, context=context)
 
 
@@ -31,8 +32,15 @@ def bookListView(request):
     }
     get_data = request.GET
     # START YOUR CODE HERE
-    
-    
+    q=Q()
+    if 'title' in get_data.keys():
+        if get_data['title']!='':
+            q |=Q(title__iexact=get_data['title'])
+        if get_data['author']!='':
+            q |=Q(author__iexact=get_data['author'])
+        if get_data['genre']!='':
+            q |=Q(genre__iexact=get_data['genre'])
+        context['books']=Book.objects.filter(q)
     return render(request, template_name, context=context)
 
 @login_required
@@ -42,11 +50,11 @@ def viewLoanedBooks(request):
         'books': None,
     }
     '''
-    The above key 'books' in the context dictionary should contain a list of instances of the 
+    The above key 'books' in the context dictionary should contain a list of instances of the
     BookCopy model. Only those book copies should be included which have been loaned by the user.
     '''
     # START YOUR CODE HERE
-    
+
 
 
     return render(request, template_name, context=context)
@@ -73,10 +81,8 @@ This view will return the issued book.
 You need to accept the book id as argument from a post request.
 You additionally need to complete the returnBook function in the loaned_books.html file
 to make this feature complete
-''' 
+'''
 @csrf_exempt
 @login_required
 def returnBookView(request):
     pass
-
-
