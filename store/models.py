@@ -9,10 +9,21 @@ class Book(models.Model):
     description = models.TextField(null=True)
     mrp = models.PositiveIntegerField()
     rating = models.FloatField(default=0.0)
-
+    ratings = []
     class Meta:
         ordering = ('title',)
-
+    def updateRate(self,raterinp,user):
+        self.ratings.append([user,raterinp])
+        self.rating= sum([i[1] for i in self.ratings])/len(self.ratings)
+    def editRate(self,newrateinp,user):
+        ind=0
+        for i in self.ratings:
+            if(i[0]==user):
+                self.ratings[ind][1]=newrateinp
+                self.rating= sum([i[1] for i in self.ratings])/len(self.ratings)
+                break
+            ind+=1
+        
     def __str__(self):
         return f'{self.title} by {self.author}'
 
@@ -29,4 +40,3 @@ class BookCopy(models.Model):
             return f'{self.book.title}, {str(self.borrow_date)}'
         else:
             return f'{self.book.title} - Available'
-

@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
+from datetime import date
 # Create your views here.
 
 def index(request):
@@ -54,8 +55,7 @@ def viewLoanedBooks(request):
     BookCopy model. Only those book copies should be included which have been loaned by the user.
     '''
     # START YOUR CODE HERE
-
-
+    context['books']=BookCopy.objects.filter(borrower__exact=request.user)
 
     return render(request, template_name, context=context)
 
@@ -70,8 +70,19 @@ def loanBookView(request):
     If yes, then set the message to 'success', otherwise 'failure'
     '''
     # START YOUR CODE HERE
-    book_id = None # get the book id from post data
-
+    book_id = request.POST['bid'] # get the book id from post data
+    if not request.user.is_authenticated:
+        response_data['message']='Login to continue'
+        return JsonResponse(response_data)
+    book = BookCopy.objects.filter(book_id__exact=book_id,status__exact=True).first()
+    if book:
+        book.borrow_date=date.today()
+        book.status=False
+        book.borrower=request.user
+        book.save()
+        response_data['message']='success'
+    else:
+        response_data['message']='failure'
 
     return JsonResponse(response_data)
 
@@ -84,5 +95,21 @@ to make this feature complete
 '''
 @csrf_exempt
 @login_required
+@require_http_methods(["POST"])
 def returnBookView(request):
-    pass
+    response_data = {
+        'message': None,
+    }
+    book_id=request.POST['bid']
+    try:
+        book=BookCopy.objects.get(pk=book_id)
+        book.status=True
+        book.borrower=None
+        book.borrow_date=None
+        book.save()
+        response_data['message']='Successfully Book returned.'
+        return JsonResponse(response_data)
+
+    except:
+        response_data['message']='No such book_id found'
+        return JsonResponse(response_data)
