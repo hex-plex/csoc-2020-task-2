@@ -8,5 +8,6 @@ urlpatterns = [
     path('books/loaned/', viewLoanedBooks, name="view-loaned"),
     path('books/loan/', loanBookView, name="loan-book"),
     path('books/return/', returnBookView, name="return-book"),
+    path('book/<int:bid>/rate',ratingItView, name="ratingIt"),
     path('',include('authentication.urls')),
 ]

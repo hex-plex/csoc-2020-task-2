@@ -24,7 +24,7 @@ def bookDetailView(request, bid):
     context['book']=get_object_or_404(Book,pk=bid)
     context['num_available']=len(BookCopy.objects.filter(book=context['book'],status=True))
     if request.user.is_authenticated:
-        messages.info(request,context['book'].myRateing(str(user.username)))
+        messages.info(request,context['book'].myRateing(str(request.user.username)))
     return render(request, template_name, context=context)
 
 
@@ -121,17 +121,17 @@ def returnBookView(request):
 @csrf_exempt
 @login_required
 @require_http_methods(["POST"])
-def ratingIt(request):
+def ratingItView(request,bid):
     response_data = {
         'message': None,
     }
-    book=Book.objects.get(pk=request.POST["bid"])
-    rating = request.POST["rating"]
+    book=Book.objects.get(pk=bid)
+    ratinginp = request.POST["rating"]
     ind = book.checkUser(str(request.user))
     if ind==-1:
-        book.updateRate(rating,str(request.user))
+        book.updateRate(ratinginp,str(request.user))
     else:
-        res=book.editRate(rating,str(request.user),ind)
+        res=book.editRate(ratinginp,str(request.user),ind)
         if res==1:
             response_data['message']="Successfully updated Rating"
         else:
