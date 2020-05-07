@@ -130,13 +130,13 @@ def ratingItView(request,bid):
     ratinginp=int(ratinginp)
     ratinginp=max(0,ratinginp)
     ratinginp=min(10,ratinginp)
-    ind = book.checkUser(str(request.user))
+    ind = book.checkUser(str(request.user.username))
     #print(ind)
     if ind==-1:
-        book.updateRate(ratinginp,str(request.user))
+        book.updateRate(ratinginp,str(request.user.username))
         #print(book.rating)
     else:
-        res=book.editRate(ratinginp,str(request.user),ind)
+        res=book.editRate(ratinginp,str(request.user.username),ind)
         #print(book.rating)
         if res==1:
             response_data['message']="Successfully updated Rating"
