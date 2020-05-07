@@ -6,6 +6,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
+from django.contrib import messages
 from datetime import date
 # Create your views here.
 
@@ -22,6 +23,8 @@ def bookDetailView(request, bid):
 
     context['book']=get_object_or_404(Book,pk=bid)
     context['num_available']=len(BookCopy.objects.filter(book=context['book'],status=True))
+    if request.user.is_authenticated:
+        messages.info(request,context['book'].myRateing(str(user.username)))
     return render(request, template_name, context=context)
 
 
@@ -114,3 +117,23 @@ def returnBookView(request):
     except:
         response_data['message']='No such book_id found'
         return JsonResponse(response_data)
+
+@csrf_exempt
+@login_required
+@require_http_methods(["POST"])
+def ratingIt(request):
+    response_data = {
+        'message': None,
+    }
+    book=Book.objects.get(pk=request.POST["bid"])
+    rating = request.POST["rating"]
+    ind = book.checkUser(str(request.user))
+    if ind==-1:
+        book.updateRate(rating,str(request.user))
+    else:
+        res=book.editRate(rating,str(request.user),ind)
+        if res==1:
+            response_data['message']="Successfully updated Rating"
+        else:
+            response_data['message']="Something went wrong"
+    return JsonResponse(response_data)

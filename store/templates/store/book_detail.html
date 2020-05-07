@@ -16,13 +16,56 @@
     <dd>{{ book.description }}</dd>
     <dt>Rating:</dt>
     <dd>{{ book.rating }}</dd>
+
     <dt>MRP:</dt>
     <dd>Rs. {{ book.mrp }}</dd>
     <dt>Available Copies:</dt>
     <dd>{{ num_available }}</dd>
 </dl>
+{% if user.is_authenticated %}
+<dt>User Rating:</dt>
+<dd>{{messages}}</dd>
+<dt>Edit rating</dt>
+<select name="rating" id='drop'>
+  <option value="{{ myrate }}" selected disabled hidden>{{ myrate }}</option>
+  <option value="0">0</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+  <option value="5">5</option>
+  <option value="6">6</option>
+  <option value="7">7</option>
+  <option value="8">8</option>
+  <option value="9">9</option>
+  <option value="10">10</option>
+</select>
+<button type="submit" id="ratSubmit">Rate</button><br>
 <button class="btn btn-primary" id="loan-button">Loan {{ book.title }}</button>
+{% else %}
+<b> Login to borrow or Rate Books</b>
+{% endif %}
 <script>
+$('#ratSubmit').click(function(){
+  $.ajax({
+    url: "{%url 'ratingIt' book.id %}",
+    method : "POST",
+    data : {
+      bid:{{book.id}},
+      rating: $('#rating').val()
+    },
+    success: function(data,status,xhr){
+        alert(data["message"]);
+        location.reload();
+    },
+    failure: function(xhr,status,err){
+        alert(data["message"]);
+    }
+  });
+}
+
+);
+
 $("#loan-button").click(function(){
     $.ajax({
 		url: "{% url 'loan-book' %}",

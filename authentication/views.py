@@ -21,7 +21,11 @@ def loginView(request):
             login(request,user)
             return redirect('index')
 def logoutView(request):
-    pass
+    if request.user.is_authenticated:
+        logout(request)
+        return redirect('index')
+    else:
+        return redirect('Login')
 
 def registerView(request):
     template_name = 'authentication/signup.html'

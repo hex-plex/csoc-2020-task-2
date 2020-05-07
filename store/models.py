@@ -12,18 +12,42 @@ class Book(models.Model):
     ratings = []
     class Meta:
         ordering = ('title',)
-    def updateRate(self,raterinp,user):
-        self.ratings.append([user,raterinp])
-        self.rating= sum([i[1] for i in self.ratings])/len(self.ratings)
-    def editRate(self,newrateinp,user):
+    def checkUser(self,user):
         ind=0
         for i in self.ratings:
             if(i[0]==user):
-                self.ratings[ind][1]=newrateinp
-                self.rating= sum([i[1] for i in self.ratings])/len(self.ratings)
                 break
             ind+=1
-        
+        if ind==len(self.ratings):
+            return -1
+        else:
+            return ind
+    def myRateing(self,user):
+        ind = self.checkUser(str(user))
+        if(ind==-1):
+            return "Not Rated Yet"
+        else:
+            return "You have rated it "+str(self.ratings[ind][1])
+
+    def updateRate(self,raterinp,user):
+        self.ratings.append([user,raterinp])
+        self.rating= sum([i[1] for i in self.ratings])/len(self.ratings)
+    def editRate(self,newrateinp,user,ind=-1):
+        try:
+            if ind==-1:
+                ind=0
+                for i in self.ratings:
+                    if(i[0]==user):
+                        self.ratings[ind][1]=newrateinp
+                        self.rating= sum([i[1] for i in self.ratings])/len(self.ratings)
+                        break
+                    ind+=1
+            else:
+                self.ratings[ind][1]=newrateinp
+                self.rating= sum([i[1] for i in self.ratings])/len(self.ratings)
+            return 1
+        except:
+            return 0
     def __str__(self):
         return f'{self.title} by {self.author}'
 
