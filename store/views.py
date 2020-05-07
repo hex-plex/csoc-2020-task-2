@@ -24,7 +24,7 @@ def bookDetailView(request, bid):
     context['book']=get_object_or_404(Book,pk=bid)
     context['num_available']=len(BookCopy.objects.filter(book=context['book'],status=True))
     if request.user.is_authenticated:
-        messages.info(request,context['book'].myRateing(str(request.user.username)))
+        messages.info(request,str(context['book'].myRateing(str(request.user.username))))
     return render(request, template_name, context=context)
 
 
@@ -126,14 +126,21 @@ def ratingItView(request,bid):
         'message': None,
     }
     book=Book.objects.get(pk=bid)
-    ratinginp = request.POST["rating"]
+    ratinginp=float(request.POST.get('rat'))
+    ratinginp=int(ratinginp)
+    ratinginp=max(0,ratinginp)
+    ratinginp=min(10,ratinginp)
     ind = book.checkUser(str(request.user))
+    #print(ind)
     if ind==-1:
         book.updateRate(ratinginp,str(request.user))
+        #print(book.rating)
     else:
         res=book.editRate(ratinginp,str(request.user),ind)
+        #print(book.rating)
         if res==1:
             response_data['message']="Successfully updated Rating"
         else:
             response_data['message']="Something went wrong"
+    book.save()
     return JsonResponse(response_data)

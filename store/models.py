@@ -32,6 +32,7 @@ class Book(models.Model):
     def updateRate(self,raterinp,user):
         self.ratings.append([user,raterinp])
         self.rating= sum([i[1] for i in self.ratings])/len(self.ratings)
+        self.save()
     def editRate(self,newrateinp,user,ind=-1):
         try:
             if ind==-1:
@@ -45,8 +46,10 @@ class Book(models.Model):
             else:
                 self.ratings[ind][1]=newrateinp
                 self.rating= sum([i[1] for i in self.ratings])/len(self.ratings)
+                self.save()
             return 1
         except:
+            self.save()
             return 0
     def __str__(self):
         return f'{self.title} by {self.author}'

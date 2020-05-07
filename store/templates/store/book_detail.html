@@ -24,35 +24,48 @@
 </dl>
 {% if user.is_authenticated %}
 <dt>User Rating:</dt>
-<dd>{{messages}}</dd>
+<dd>
+  {% for message in messages|slice:":0" %}
+  {{message}}
+
+  {% endfor %}
+</dd>
 <dt>Edit rating</dt>
-<select name="rating" id='drop'>
-  <option value="{{ myrate }}" selected disabled hidden>{{ myrate }}</option>
-  <option value="0">0</option>
-  <option value="1">1</option>
-  <option value="2">2</option>
-  <option value="3">3</option>
-  <option value="4">4</option>
-  <option value="5">5</option>
-  <option value="6">6</option>
-  <option value="7">7</option>
-  <option value="8">8</option>
-  <option value="9">9</option>
-  <option value="10">10</option>
-</select>
-<button type="submit" id="ratSubmit">Rate</button><br>
+<!--<select name="ratingItdrop" id='drop'>
+  <option value= "0" >0</option>
+  <option value= "1" >1</option>
+  <option value= "2" >2</option>
+  <option value= "3" >3</option>
+  <option value= "4" >4</option>
+  <option value= "5" >5</option>
+  <option value= "6" >6</option>
+  <option value= "7" >7</option>
+  <option value= "8" >8</option>
+  <option value= "9" >9</option>
+  <option value= "10" >10</option>
+</select>-->
+<input id="ratininpval" type="text" value="0" >
+<button type="submit" id="ratSubmit" onclick="">Rate</button><br>
 <button class="btn btn-primary" id="loan-button">Loan {{ book.title }}</button>
 {% else %}
 <b> Login to borrow or Rate Books</b>
 {% endif %}
 <script>
-$('#ratSubmit').click(function(){
+var sel =document.getElementById('ratininpval');
+var res = sel.value;
+//console.log(res);
+
+$('#ratSubmit').click(function(sel){
+  var sel =document.getElementById('ratininpval');
+  var res = sel.value;
+
+
   $.ajax({
     url: "{%url 'ratingIt' book.id %}",
     method : "POST",
     data : {
-      bid:{{book.id}},
-      rating: $('#rating').val()
+      bid: {{book.id}} ,
+      rat: res,
     },
     success: function(data,status,xhr){
         alert(data["message"]);
@@ -60,6 +73,7 @@ $('#ratSubmit').click(function(){
     },
     failure: function(xhr,status,err){
         alert(data["message"]);
+        location.reload();
     }
   });
 }
