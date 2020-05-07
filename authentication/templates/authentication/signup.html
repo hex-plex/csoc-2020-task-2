@@ -1,0 +1,48 @@
+{% extends 'authentication/base.html' %}
+{% block title %}
+    Register - Library
+{% endblock %}
+
+{% block content %}
+  <div class="error">
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+      <li><span style="color: red;" >{{message}}</span></li>
+      <script>alert("{{message}}")</script>
+    {% endfor %}
+  {% endif %}
+  {% if errors %}
+
+  <ul>
+    {% for error in errors %}
+      <li><span style="color: red;" >{{error}}</span></li>
+    {% endfor %}
+  {% endif %}
+  <form action="" method="POST" id="signupForm" >
+    {% csrf_token %}
+    {% if datahid %}
+        <input type = "hidden" name="datahidsign" value={{datahid}} />
+    {% endif %}
+    <div class="form-inp">
+            <label>Username</label>
+            <input class="form-dat" type="text" name="username" id="inputUsername" required/>
+    </div>
+    <div class="form-inp">
+            <label>Password</label>
+            <input class="form-dat" type="password" name="password" id="inputPassword" required/>
+    </div>
+    <div class="form-inp">
+            <label>Confirm Password</label>
+            <input class="form-dat" type="password" name="password2" id="inputPassword2" required/>
+    </div>
+    <div class="form-inp">
+            <label>E-mail</label>
+            <input class="form-dat" type="text" name="email" id="inputEmail" required/>
+    </div>
+    <br>
+    <input class="form-inp-sub" id="submit-btn" value="Submit" type="Submit">
+  </form>
+  <p>already have an account<a href="{% url 'Login'%}">Click to Login!</a></p>
+</div>
+{% endblock %}
