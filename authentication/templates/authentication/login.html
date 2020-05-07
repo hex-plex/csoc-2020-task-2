@@ -1,18 +1,18 @@
-{% extends 'base.html' %}
+{% extends 'authentication/base.html' %}
 {% block title %}
     Login - Library
 {% endblock %}
-{% block form %}
+
+{% block content %}
   <div class="error">
   {% if messages %}
   <ul>
     {% for message in messages %}
-      <li><span style="color: green;" >{{message}}</span></li>
+      <li><span style="color: red;" >{{message}}</span></li>
       <script>alert("{{message}}")</script>
     {% endfor %}
   {% endif %}
   {% if errors %}
-</div>
 
   <ul>
     {% for error in errors %}
@@ -35,5 +35,6 @@
     <br>
     <input class="form-inp-sub" id="submit-btn" value="Submit" type="Submit">
   </form>
-  <p>New User?<a href="{% url 'register'%}">Click to Register!</a></p>
+  <p>New User?<a href="{% url 'Signup'%}">Click to Register!</a></p>
+</div>
 {% endblock %}

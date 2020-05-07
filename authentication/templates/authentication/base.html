@@ -32,11 +32,11 @@
             <hr>
             <li>User: {{ user.first_name }}</li>
             <li><a href="{% url 'view-loaned' %}">My Borrowings</a></li>
-            <li><a href="{% url 'logout' %}">Logout</a></li>
+            <li><a href="{% url 'Logout'%}">Logout</a></li>
         {% else %}
             <hr>
-            <li><a href="{% url 'login'%}">Login</a></li>
-            <li><a href="{% url 'register'%}">Register</a></li>
+            <li><a href="{% url 'Login'%}">Login</a></li>
+            <li><a href="{% url 'Signup'%}">Register</a></li>
         {% endif %}
         </ul>
 
